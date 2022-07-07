@@ -1,5 +1,8 @@
 <template>
-  <SessionManager/>
+  <div>
+    <h1>To-Do List</h1>
+    <SessionManager/>
+  </div>
 </template>
 
 <script>

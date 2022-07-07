@@ -1,6 +1,6 @@
 <template>
     <div class="container">
-        <h1 class="sm-title">Vue Session Manager</h1>
+        <!-- <h1 class="sm-title">Vue Session Manager</h1> -->
         <div class="sm-card">
             <div v-if="isLoggedIn">
                 <button @click="logoutUser" class="logout-button" >Logout</button>
@@ -20,6 +20,7 @@
                     </tr>
                     </tbody>
                 </table>
+                <TaskList/>
             </div>
             <div v-else>
                 <h3>Sign Up!</h3>
@@ -53,6 +54,7 @@
 <script>
 import "@/store/index.js";
 import { mapActions, mapGetters } from "vuex";
+import TaskList from "./TaskList.vue";
 export default {
     name: "SessionManager",
     computed: {
@@ -60,10 +62,10 @@ export default {
     },
     data() {
         return {
-        signUpEmail: "",
-        signUpPassword: "",
-        loginEmail: "",
-        loginPassword: "",
+            signUpEmail: "",
+            signUpPassword: "",
+            loginEmail: "",
+            loginPassword: "",
         };
     },
     methods: {
@@ -71,13 +73,13 @@ export default {
         onSignUp(event) {
             event.preventDefault();
             let data = {
-            user: {
-            email: this.signUpEmail,
-            password: this.signUpPassword,
-            },
-        };
-        this.registerUser(data);
-        this.resetData();
+                user: {
+                    email: this.signUpEmail,
+                    password: this.signUpPassword,
+                },
+            };
+            this.registerUser(data);
+            this.resetData();
         },
         onLogin(event) {
             event.preventDefault();
@@ -97,6 +99,7 @@ export default {
             this.loginPassword = "";
         },
     },
+    components: { TaskList }
 }
 </script>
 
