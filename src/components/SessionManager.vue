@@ -1,51 +1,35 @@
 <template>
     <div class="container">
-        <!-- <h1 class="sm-title">Vue Session Manager</h1> -->
         <div>
             <div v-if="isLoggedIn">
                 <button @click="logoutUser" class="logout-button" >Logout</button>
-                <!-- <table class="table">
-                    <thead class="thead-dark">
-                    <tr class="table-headers">
-                        <th scope="col">ID</th>
-                        <th scope="col">email</th>
-                        <th scope="col">Token</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr class="table-rows">
-                        <th class="table-row">[{{ this.getUserID }}]</th>
-                        <td class="table-row table-row-username">{{ this.getUserEmail }}</td>
-                        <td class="table-row">{{ this.getAuthToken }}</td>
-                    </tr>
-                    </tbody> -->
-                <!-- </table> -->
                 <TaskList/>
             </div>
             <div v-else>
-                <h3>Sign Up!</h3>
+                <div v-if="!showSignIn">
+                    <h3>Sign Up!</h3>
                     <form @submit="onSignUp" class="sign-up-form">
                         <input class="sign-up-form-email" type="email" v-model="signUpEmail" placeholder="Email" />
-                        <br />
-                        <input
-                            type="password"
-                            class="sign-up-form-password"
-                            v-model="signUpPassword"
-                            placeholder="Password"
-                        />
+                        <br/>
+                        <input class="sign-up-form-password" type="password" v-model="signUpPassword" placeholder="Password"/>
                         <br/>
                         <input type="submit" value="Sign up" class="sign-up-form-submit" />
+                        <br/>
+                        <p>Already a user? <a @click="showSignIn = true">Login.</a></p>
                     </form>
-                <hr />
-                <br />
-                <h3>Login!</h3>
-                <form @submit="onLogin" class="login-form">
-                    <input class="login-form-email" type="text" v-model="loginEmail" placeholder="Email" />
-                    <br />
-                    <input class="login-form-password" type="password" v-model="loginPassword" placeholder="Password" />
-                    <br />
-                    <input type="submit" value="Login" class="login-form-submit" />
-                </form>
+              </div>
+              <div v-if="showSignIn">
+                  <h3>Login!</h3>
+                  <form @submit="onLogin" class="login-form">
+                      <input class="login-form-email" type="text" v-model="loginEmail" placeholder="Email" />
+                      <br />
+                      <input class="login-form-password" type="password" v-model="loginPassword" placeholder="Password" />
+                      <br />
+                      <input type="submit" value="Login" class="login-form-submit" />
+                      <br/> 
+                      <p>Not a user? <a @click="showSignIn = False">Create an Account.</a></p>
+                  </form>
+              </div>
             </div>
         </div>
     </div>
@@ -66,6 +50,7 @@ export default {
             signUpPassword: "",
             loginEmail: "",
             loginPassword: "",
+            showSignIn: true
         };
     },
     methods: {
@@ -104,11 +89,13 @@ export default {
 </script>
 
 <style scoped>
-.sm-title {
-  font-size: 2.5rem;
-  font-weight: bold;
-  text-align: center;
-  font-family: "Roboto", sans-serif;
+a {
+  color: blue;
+  cursor: pointer;
+}
+
+a:hover {
+  color: rgb(0, 0, 225);
 }
 .container {
   width: 90%;
@@ -118,14 +105,14 @@ export default {
   width: 100%;
 }
 .sign-up-form-email {
-  width: 55%;
+  width: 35%;
   padding: 10px;
   margin: 0 auto;
   border-radius: 5px;
   border: 1px solid #ccc;
 }
 .sign-up-form-password {
-  width: 55%;
+  width: 35%;
   padding: 10px;
   margin: 0 auto;
   border-radius: 5px;
@@ -149,14 +136,14 @@ export default {
   width: 100%;
 }
 .login-form-email {
-  width: 55%;
+  width: 35%;
   padding: 10px;
   margin: 0 auto;
   border-radius: 5px;
   border: 1px solid #ccc;
 }
 .login-form-password {
-  width: 55%;
+  width: 35%;
   padding: 10px;
   margin: 0 auto;
   border-radius: 5px;
@@ -188,23 +175,5 @@ export default {
 .logout-button:hover {
   background-color: #0d5c8a;
   cursor: pointer;
-}
-.table-headers {
-  background-color: #2b3b49;
-  color: #fff;
-  max-width: 90%;
-  margin: 0 auto;
-}
-.table-rows {
-  background-color: #f2f2f2;
-  margin: 0 auto;
-}
-.table-row {
-  word-break: break-all;
-  text-align: center;
-  padding: 10px;
-}
-.table-row-username {
-  width: 30%;
-}
+} 
 </style>

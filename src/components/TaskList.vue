@@ -1,33 +1,34 @@
 <template>
-  <div>
-    <ul v-for="task in tasks" :key="task.id"> 
-      <li class="name">{{ task.name }}</li>
-      <li class="description">{{ task.description }}</li> 
-      <li class="id">task.id: {{ task.id }}</li>
-      <button v-if="!showEdit" @click="showEdit=true">Edit Task</button>
-      <div v-if="showEdit">
-        {{task.id}}
-        <form form @submit="editTask(task.id, editName, editDescription)">
-          <input type="text" v-model="editName" :placeholder="[task.name]" />
-          <br />
-          <input type="text" v-model="editDescription" :placeholder="[task.description]" />
-          <br />
-          <input type="Submit" value="Update"/>
-        </form>  
-        <form form @submit="removeTask(task.id)">
-          <input type="Submit" value="Delete Task"/>
-        </form> 
-      </div>
-    </ul>
-    <br/>
-    <form @submit="addTask">
-        <input type="text" v-model="newName" placeholder="Name" />
-        <br />
-        <input type="text" v-model="newDescription" placeholder="Description" />
-        <br />
-        <input type="Submit" value="Add Task"/>
-    </form>
-  </div>
+    <div>
+        <h3 class="greeting">Hello, {{ getUserEmail.split("@")[0] }}</h3>
+        <ul v-for="task in tasks" :key="task.id">
+            <li class="name">{{ task.name }}</li>
+            <li class="description">{{ task.description }}</li> 
+            <button v-if="showOptions != task.id" @click="editTaskForm(task)">Edit Task</button>
+            <div v-if="showOptions == task.id">
+                  <form form @submit="editTask(task.id, editName, editDescription)">
+                    <input type="text" v-model="editName" placeholder="Name"/>
+                    <br />
+                    <input type="textarea" v-model="editDescription" placeholder="Description" />
+                    <br />
+                    <input type="Submit" value="Update Task"/>
+                </form>  
+                <form form @submit="removeTask(task.id)">
+                    <input type="Submit" value="Delete Task"/>
+                </form>
+                <br />
+                <button @click="showOptions=false">Cancel</button>
+          </div> 
+        </ul>
+        <br/>
+        <form @submit="addTask">
+            <input type="text" v-model="newName" placeholder="Name" />
+            <br />
+            <input type="textarea" v-model="newDescription" placeholder="Description" />
+            <br />
+            <input type="Submit" value="Add Task"/>
+        </form>
+    </div>
 </template>
 
 <script>
@@ -45,15 +46,11 @@ export default {
   data() {
     return {
         tasks: null,
-        showEdit: false,
-        // tasks: {
-        //   ids: []
-        //   names: [],
-        //   descriptions: []
-        // },
         newName: "",
         newDescription: "",
-        showOptions: false
+        editName: "",
+        editDescription: "",
+        showOptions: "",
     };
   },
   created() {
@@ -105,6 +102,11 @@ export default {
             "Authorization": this.getAuthToken,
           }       
         })
+    },
+    editTaskForm(task) {
+      this.showOptions = task.id;
+      this.editName = task.name;
+      this.editDescription = task.description;
     }
   }
 };
@@ -116,7 +118,7 @@ li {
 }
 .name {
   font-size: 24px;
-  color: blue;
+  color: #1a77ce;
   font-weight: bold;
 }
 .description {
@@ -125,9 +127,36 @@ li {
 .id {
   font-size: 12px;
 }
-ul{
-        display:center;
-        border:2px solid gray;
-        padding:10px;
+.greeting {
+  position: absolute; top:0; left:5px;
+}
+ul {
+    display: center;
+    border: 2px solid gray;
+    padding: 5px;
+    border-radius: 15px;
+}
+button {
+  width: 10%;
+  padding: 1px;
+  margin: 0 auto;
+  border-radius: 5px;
+  background-color: #1a77ce;
+  color: #fff;
+  border: none;
+}
+input[type=submit] {
+  width: 10%;
+  padding: 1px;
+  margin: 0 auto;
+  border-radius: 5px;
+  background-color: #1a77ce;
+  color: #fff;
+  border: none;
+}
+input {
+  padding: 1px;
+  border-radius: 5px;
+  margin: 0 auto;
 }
 </style>
