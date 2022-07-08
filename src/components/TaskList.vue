@@ -1,26 +1,38 @@
 <template>
   <div>
-    <h1>Tasks</h1>
-    <ul v-for="task in tasks" :key="task.id">
+    <ul v-for="task in tasks" :key="task.id"> 
       <li class="name">{{ task.name }}</li>
-      <li class="description">{{ task.description }}</li>
-      <li class="userID">user_id: {{ task.user_id }}</li>
-      <li>current user id: {{ this.getUserID }}</li>
+      <li class="description">{{ task.description }}</li> 
+      <li class="id">task.id: {{ task.id }}</li>
+      <button v-if="!showEdit" @click="showEdit=true">Edit Task</button>
+      <div v-if="showEdit">
+        {{task.id}}
+        <form form @submit="editTask(task.id, editName, editDescription)">
+          <input type="text" v-model="editName" :placeholder="[task.name]" />
+          <br />
+          <input type="text" v-model="editDescription" :placeholder="[task.description]" />
+          <br />
+          <input type="Submit" value="Update"/>
+        </form>  
+        <form form @submit="removeTask(task.id)">
+          <input type="Submit" value="Delete Task"/>
+        </form> 
+      </div>
     </ul>
+    <br/>
     <form @submit="addTask">
         <input type="text" v-model="newName" placeholder="Name" />
         <br />
         <input type="text" v-model="newDescription" placeholder="Description" />
         <br />
         <input type="Submit" value="Add Task"/>
-        </form>
+    </form>
   </div>
 </template>
 
 <script>
 import axios from "axios";
 import "@/store/index.js";
-import SessionManger from "./SessionManager.vue";
 import { mapGetters } from "vuex";
 
 const BASE_URL = "http://localhost:3000";
@@ -33,8 +45,15 @@ export default {
   data() {
     return {
         tasks: null,
+        showEdit: false,
+        // tasks: {
+        //   ids: []
+        //   names: [],
+        //   descriptions: []
+        // },
         newName: "",
-        newDescription: ""
+        newDescription: "",
+        showOptions: false
     };
   },
   created() {
@@ -63,6 +82,29 @@ export default {
                 }       
             })
             .catch((error) => console.log(error));
+    }, 
+    editTask(id, _name, _description) {
+      let data = {
+        task: {
+          name: _name,
+          description: _description,
+          user_id: this.getUserID
+        }
+      }
+      axios
+        .put(`${BASE_URL}/tasks/${id}`, data, {
+          headers: {
+            "Authorization": this.getAuthToken,
+          }
+        })
+    },
+    removeTask(id) {
+      axios 
+        .delete(`${BASE_URL}/tasks/${id}`, {
+          headers: {
+            "Authorization": this.getAuthToken,
+          }       
+        })
     }
   }
 };
@@ -79,5 +121,13 @@ li {
 }
 .description {
   font-size: 18px;
+}
+.id {
+  font-size: 12px;
+}
+ul{
+        display:center;
+        border:2px solid gray;
+        padding:10px;
 }
 </style>

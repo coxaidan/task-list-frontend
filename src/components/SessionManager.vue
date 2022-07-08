@@ -1,10 +1,10 @@
 <template>
     <div class="container">
         <!-- <h1 class="sm-title">Vue Session Manager</h1> -->
-        <div class="sm-card">
+        <div>
             <div v-if="isLoggedIn">
                 <button @click="logoutUser" class="logout-button" >Logout</button>
-                <table class="table">
+                <!-- <table class="table">
                     <thead class="thead-dark">
                     <tr class="table-headers">
                         <th scope="col">ID</th>
@@ -18,8 +18,8 @@
                         <td class="table-row table-row-username">{{ this.getUserEmail }}</td>
                         <td class="table-row">{{ this.getAuthToken }}</td>
                     </tr>
-                    </tbody>
-                </table>
+                    </tbody> -->
+                <!-- </table> -->
                 <TaskList/>
             </div>
             <div v-else>
@@ -33,7 +33,7 @@
                             v-model="signUpPassword"
                             placeholder="Password"
                         />
-                        <br />
+                        <br/>
                         <input type="submit" value="Sign up" class="sign-up-form-submit" />
                     </form>
                 <hr />
@@ -114,14 +114,6 @@ export default {
   width: 90%;
   margin: 0 auto;
 }
-.sm-card {
-  width: 75%;
-  padding: 20px;
-  margin: 0 auto;
-  height: 25em;
-  border-radius: 10px;
-  box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.2);
-}
 .sign-up-form {
   width: 100%;
 }
@@ -184,13 +176,14 @@ export default {
   cursor: pointer;
 }
 .logout-button {
-  width: 15%;
+  width: 10%;
   padding: 1em;
   margin: 0 auto;
   border-radius: 5px;
   background-color: #1a77ce;
   color: #fff;
   border: none;
+  position:absolute; top:0; right:0;
 }
 .logout-button:hover {
   background-color: #0d5c8a;
