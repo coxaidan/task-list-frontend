@@ -1,123 +1,127 @@
 <template>
-    <div>
-        <h3 class="user-greeting">Hello, {{ getUserEmail }}</h3>
-        <ul v-for="task in tasks" :key="task.id">
-
-            <!-- TODO: Radio button to allow the user to mark a task completed -->
-            <!-- <form form @submit="removeTask(task.id)"> -->
-            <!-- <input class="complete-button" type="submit" value="Complete"/> -->
-            <!-- </form> -->
-            <a @click="editTaskForm(task)">
-              <li class="list-task-name"> {{ task.name }} </li>
-              <li class="list-task-description"> {{ task.description }}</li> 
-            </a>
-            
-            <button v-if="showSidepanelForID != task.id" @click="editTaskForm(task)">Edit Task</button>
-            
-            <div class="sidepanel" v-if="showSidepanelForID == task.id">
-                <form form @submit="editTask(task.id, editName, editDescription)">
-                    <input class="form-task-name" type="text" v-model="editName" placeholder="Task name" required/>
-                    <textarea class="form-task-description" type="text" rows="3" cols="20" v-model="editDescription" placeholder="Task description"></textarea>
-                    <input type="Submit" value="Update Task"/>
-                </form>  
-                <form form @submit="removeTask(task.id)">
-                    <input type="Submit" value="Delete Task"/>
-                </form>
-                <button @click="showSidepanelForID=false">Cancel</button>
-            </div> 
-        </ul>
-        
-        <form class="addTaskForm" @submit="addTask">
-            <input class="form-task-name" type="text" v-model="newName" placeholder="Task Name" required/>
-            <textarea class="form-task-description" type="text" rows="4" cols="20" v-model="newDescription" placeholder="Task Description"></textarea>
-            <input type="Submit" value="Add Task"/>
-        </form>
+<div>
+   <div class="container">
+    <h3 class="user-greeting">Hello, {{ getUserEmail }}</h3>
+    <div class="task-list">
+    <ul v-for="task in tasks" :key="task.id">
+      <div class="task-item">
+        <button @click="removeTask(task.id)" class="complete-task-button" type="checkbox"></button>
+        <div class="open-side-bar" @click="editTaskForm(task)"> 
+          <li class="list-task-name"> {{ task.name }} </li>
+          <li class="list-task-description"> {{ task.description }}</li> 
+        </div> 
+      </div>
+    </ul>
     </div>
+    <form class="add-task-form" @submit="addTask">
+      <input class="form-task-name" type="text" v-model="newName" placeholder="Task Name" required/>
+      <textarea class="form-task-description" type="text" rows="4" cols="20" v-model="newDescription" placeholder="Task Description"></textarea>
+      <input type="Submit" value="Add Task"/>
+    </form>
+  </div>
+  <div class="sidepanel-wrap" v-if="showSidepanelForID != null">
+    <div class="sidepanel">
+      <form form @submit="editTask(showSidepanelForID, editName, editDescription)">
+        <input class="form-task-name" type="text" v-model="editName" placeholder="Task name" required/>
+        <textarea class="form-task-description" type="text" rows="3" cols="20" v-model="editDescription" placeholder="Task description"></textarea>
+        <input type="Submit" value="Update Task"/>
+      </form>  
+      <form form @submit="removeTask(showSidepanelForID)">
+        <input type="Submit" value="Delete Task"/>
+      </form>
+      <button @click="showSidepanelForID=null">Cancel</button>
+    </div> 
+  </div>
+</div>
 </template>
 
 <script>
 import axios from "axios";
-import "@/store/index.js";
 import { mapGetters } from "vuex";
 
 const BASE_URL = "http://localhost:3000";
 
 export default {
-    name: "TaskList",
-    computed: {
-        ...mapGetters(["getAuthToken", "getUserEmail", "getUserID", "isLoggedIn"]),
-    },
-    data() {
-        return {
-            tasks: null,
-            // task: {
-            //   names: [],
-            //   descriptions: [],
-            //   ids: []
-            // },
-            newName: "",
-            newDescription: "",
-            editName: "",
-            editDescription: "",
-            showSidepanelForID: "",
-        };
-    },
-    created() {
-        axios
-            .get(`${BASE_URL}/tasks`, {
-                headers: {
-                "Authorization": this.getAuthToken,
-            },
-        })
-            .then((response) => (this.tasks = response.data))
-            .catch((error) => console.log(error));
-    },
-    methods: {
-        addTask() {
-            let data = {
-                task: {
-                    name: this.newName,
-                    description: this.newDescription,
-                    user_id: this.getUserID
-                }
-            }
-            axios
-                .post(`${BASE_URL}/tasks`, data, {
-                    headers: {
-                        "Authorization": this.getAuthToken,
-                    }       
-                })
-                .catch((error) => console.log(error));
-        }, 
-        editTask(id, _name, _description) {
-            let data = {
-                task: {
-                    name: _name,
-                    description: _description,
-                    user_id: this.getUserID
-                }
-            }
-            axios
-                .put(`${BASE_URL}/tasks/${id}`, data, {
-                    headers: {
-                        "Authorization": this.getAuthToken,
-                    }
-                })
-        },
-        removeTask(id) {
-            axios 
-                .delete(`${BASE_URL}/tasks/${id}`, {
-                    headers: {
-                        "Authorization": this.getAuthToken,
-                    }       
-                })
-        },
-        editTaskForm(task) {
-            this.showSidepanelForID = task.id;
-            this.editName = task.name;
-            this.editDescription = task.description;
+  name: "TaskList",
+  computed: {
+    ...mapGetters(["getAuthToken", "getUserEmail", "getUserID", "isLoggedIn"]),
+  },
+  data() {
+    return {
+      tasks: null,
+      // task: {
+      //   names: [],
+      //   descriptions: [],
+      //   ids: []
+      // },
+      newName: "",
+      newDescription: "",
+      editName: "",
+      editDescription: "",
+      showSidepanelForID: null,
+    };
+  },
+  created() {
+    const config = {
+      headers: {
+        authorization: this.getAuthToken,
+      },
+    };
+    axios
+      .get(`${BASE_URL}/tasks`, config)
+      .then((response) => (this.tasks = response.data))
+      .catch((error) => console.log(error));
+  },
+  methods: {
+    addTask() {
+      const data = {
+        task: {
+          name: this.newName,
+          description: this.newDescription,
+          user_id: this.getUserID
         }
-    }
+      };
+      const config = {
+        headers: {
+          authorization: this.getAuthToken,
+        },
+      };
+      axios
+        .post(`${BASE_URL}/tasks`, data, config)
+        .catch((error) => console.log(error));
+    }, 
+    editTask(id, _name, _description) {
+      const data = {
+        task: {
+          name: _name,
+          description: _description,
+          user_id: this.getUserID
+        }
+      };
+      const config = {
+        headers: {
+          authorization: this.getAuthToken,
+        },
+      };
+      axios
+        .put(`${BASE_URL}/tasks/${id}`, data, config)
+    },
+    removeTask(id) {
+      const config = {
+        headers: {
+          authorization: this.getAuthToken,
+        },
+      };        
+      // axios 
+      //   .delete(`${BASE_URL}/tasks/${id}`, config)
+      alert("complete")
+    },
+    editTaskForm(task) {
+      this.showSidepanelForID = task.id;
+      this.editName = task.name;
+      this.editDescription = task.description;
+    },
+  }
 };
 </script>
 
@@ -125,21 +129,10 @@ export default {
 li {
     list-style: none;
 }
-.list-task-name {
-  font-size: 24px;
-  color: #1a77ce;
-  font-weight: bold;
-}
-.list-task-description {
-  font-size: 18px;
-}
-.user-greeting {
-  position: absolute; 
-  top: 15px; 
-  left: 190px;
+ul:hover {
+  background-color: lightblue;
 }
 ul {
-    display: center;
     border: 2px solid gray;
     padding: 5px;
     border-radius: 15px;
@@ -172,20 +165,86 @@ input[type=submit] {
   border: none;
   cursor: pointer;
 }
-a {
-  cursor: pointer;
+.list-task-name {
+  font-size: 20px;
+  color: #1a77ce;
+  font-weight: bold;
+  overflow-wrap: break-word;
+}
+.list-task-description {
+  font-size: 14px;
+  overflow-wrap: break-word;
+}
+.user-greeting {
+  position: absolute; 
+  top: 15px; 
+  left: 190px;
+}
+.sidepanel-wrap {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  width: 30em;
+  /* transform: translateX(100%); */
+  transition: .3s ease-out;
 }
 .sidepanel {
-  background-color: whitesmoke;
-  border-radius: 5px;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: #333;
+  color: #eee;
+  overflow: auto;
+  padding: 1em;
 }
 .complete-button {
   border-radius: 10px;
   cursor: pointer;
   background-color: black;
 }
-.addTaskForm {
-  position: relative;
-  bottom: 10px;
+/* .add-task-form {
+  position: fixed;
+  bottom: 0;
+  width: 50em;
+  border: 2px solid gray;
+  padding: 5px;
+  border-radius: 15px;
+} */
+.task-list {
+  margin: 4px, 4px;
+  padding: 4px;
+  width: 100%;
+  height: 33em;
+  overflow-x: hidden;
+  overflow-y: auto;
+  text-align: justify;
+  /* border:1px solid green;   */
+}
+.open-side-bar {
+  transform: translateX(0%);
+}
+/* .container {
+  border: 1px solid red;  
+} */
+.complete-task-button {
+  position: flex;
+  left: auto;
+  background-color: blue ;
+  border: none;
+  color: white;
+  padding: 20px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 4px 2px;
+  border-radius: 50%;
+}
+.task-item {
+  display: inline-block;
+  vertical-align: top;
 }
 </style>
