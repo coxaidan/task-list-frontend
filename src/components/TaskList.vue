@@ -1,31 +1,35 @@
 <template>
     <div>
-        <h3 class="greeting">Hello, {{ getUserEmail.split("@")[0] }}</h3>
+        <h3 class="user-greeting">Hello, {{ getUserEmail }}</h3>
         <ul v-for="task in tasks" :key="task.id">
-            <li class="name">{{ task.name }}</li>
-            <li class="description">{{ task.description }}</li> 
-            <button v-if="showOptions != task.id" @click="editTaskForm(task)">Edit Task</button>
-            <div v-if="showOptions == task.id">
-                  <form form @submit="editTask(task.id, editName, editDescription)">
-                    <input type="text" v-model="editName" placeholder="Name"/>
-                    <br />
-                    <input type="textarea" v-model="editDescription" placeholder="Description" />
-                    <br />
+
+            <!-- TODO: Radio button to allow the user to mark a task completed -->
+            <!-- <form form @submit="removeTask(task.id)"> -->
+            <!-- <input class="complete-button" type="submit" value="Complete"/> -->
+            <!-- </form> -->
+            <a @click="editTaskForm(task)">
+              <li class="list-task-name"> {{ task.name }} </li>
+              <li class="list-task-description"> {{ task.description }}</li> 
+            </a>
+            
+            <button v-if="showSidepanelForID != task.id" @click="editTaskForm(task)">Edit Task</button>
+            
+            <div class="sidepanel" v-if="showSidepanelForID == task.id">
+                <form form @submit="editTask(task.id, editName, editDescription)">
+                    <input class="form-task-name" type="text" v-model="editName" placeholder="Task name" required/>
+                    <textarea class="form-task-description" type="text" rows="3" cols="20" v-model="editDescription" placeholder="Task description"></textarea>
                     <input type="Submit" value="Update Task"/>
                 </form>  
                 <form form @submit="removeTask(task.id)">
                     <input type="Submit" value="Delete Task"/>
                 </form>
-                <br />
-                <button @click="showOptions=false">Cancel</button>
-          </div> 
+                <button @click="showSidepanelForID=false">Cancel</button>
+            </div> 
         </ul>
-        <br/>
-        <form @submit="addTask">
-            <input type="text" v-model="newName" placeholder="Name" />
-            <br />
-            <input type="textarea" v-model="newDescription" placeholder="Description" />
-            <br />
+        
+        <form class="addTaskForm" @submit="addTask">
+            <input class="form-task-name" type="text" v-model="newName" placeholder="Task Name" required/>
+            <textarea class="form-task-description" type="text" rows="4" cols="20" v-model="newDescription" placeholder="Task Description"></textarea>
             <input type="Submit" value="Add Task"/>
         </form>
     </div>
@@ -39,96 +43,100 @@ import { mapGetters } from "vuex";
 const BASE_URL = "http://localhost:3000";
 
 export default {
-  name: "TaskList",
-  computed: {
-    ...mapGetters(["getAuthToken", "getUserEmail", "getUserID", "isLoggedIn"]),
-  },
-  data() {
-    return {
-        tasks: null,
-        newName: "",
-        newDescription: "",
-        editName: "",
-        editDescription: "",
-        showOptions: "",
-    };
-  },
-  created() {
-    axios
-      .get(`${BASE_URL}/tasks`, {
-        headers: {
-          "Authorization": this.getAuthToken,
-        },
-      })
-      .then((response) => (this.tasks = response.data))
-      .catch((error) => console.log(error));
-  },
-  methods: {
-    addTask() {
-        let data = {
-            task: {
-                name: this.newName,
-                description: this.newDescription,
-                user_id: this.getUserID
-            }
-        }
+    name: "TaskList",
+    computed: {
+        ...mapGetters(["getAuthToken", "getUserEmail", "getUserID", "isLoggedIn"]),
+    },
+    data() {
+        return {
+            tasks: null,
+            // task: {
+            //   names: [],
+            //   descriptions: [],
+            //   ids: []
+            // },
+            newName: "",
+            newDescription: "",
+            editName: "",
+            editDescription: "",
+            showSidepanelForID: "",
+        };
+    },
+    created() {
         axios
-            .post(`${BASE_URL}/tasks`, data, {
+            .get(`${BASE_URL}/tasks`, {
                 headers: {
-                    "Authorization": this.getAuthToken,
-                }       
-            })
+                "Authorization": this.getAuthToken,
+            },
+        })
+            .then((response) => (this.tasks = response.data))
             .catch((error) => console.log(error));
-    }, 
-    editTask(id, _name, _description) {
-      let data = {
-        task: {
-          name: _name,
-          description: _description,
-          user_id: this.getUserID
+    },
+    methods: {
+        addTask() {
+            let data = {
+                task: {
+                    name: this.newName,
+                    description: this.newDescription,
+                    user_id: this.getUserID
+                }
+            }
+            axios
+                .post(`${BASE_URL}/tasks`, data, {
+                    headers: {
+                        "Authorization": this.getAuthToken,
+                    }       
+                })
+                .catch((error) => console.log(error));
+        }, 
+        editTask(id, _name, _description) {
+            let data = {
+                task: {
+                    name: _name,
+                    description: _description,
+                    user_id: this.getUserID
+                }
+            }
+            axios
+                .put(`${BASE_URL}/tasks/${id}`, data, {
+                    headers: {
+                        "Authorization": this.getAuthToken,
+                    }
+                })
+        },
+        removeTask(id) {
+            axios 
+                .delete(`${BASE_URL}/tasks/${id}`, {
+                    headers: {
+                        "Authorization": this.getAuthToken,
+                    }       
+                })
+        },
+        editTaskForm(task) {
+            this.showSidepanelForID = task.id;
+            this.editName = task.name;
+            this.editDescription = task.description;
         }
-      }
-      axios
-        .put(`${BASE_URL}/tasks/${id}`, data, {
-          headers: {
-            "Authorization": this.getAuthToken,
-          }
-        })
-    },
-    removeTask(id) {
-      axios 
-        .delete(`${BASE_URL}/tasks/${id}`, {
-          headers: {
-            "Authorization": this.getAuthToken,
-          }       
-        })
-    },
-    editTaskForm(task) {
-      this.showOptions = task.id;
-      this.editName = task.name;
-      this.editDescription = task.description;
     }
-  }
 };
 </script>
 
 <style scoped>
 li {
-  list-style: none;
+    list-style: none;
 }
-.name {
+.list-task-name {
   font-size: 24px;
   color: #1a77ce;
   font-weight: bold;
 }
-.description {
+.list-task-description {
   font-size: 18px;
 }
-.id {
-  font-size: 12px;
-}
-.greeting {
-  position: absolute; top:0; left:5px;
+.user-greeting {
+  position: absolute; 
+  top: 15px; 
+  left: 190px;
 }
 ul {
     display: center;
@@ -136,27 +144,48 @@ ul {
     padding: 5px;
     border-radius: 15px;
 }
+form {
+  display: flex;
+  flex-direction: column;
+}
 button {
   width: 10%;
-  padding: 1px;
+  padding: 2px;
   margin: 0 auto;
   border-radius: 5px;
   background-color: #1a77ce;
   color: #fff;
   border: none;
-}
-input[type=submit] {
-  width: 10%;
-  padding: 1px;
-  margin: 0 auto;
-  border-radius: 5px;
-  background-color: #1a77ce;
-  color: #fff;
-  border: none;
+  cursor: pointer;
 }
 input {
-  padding: 1px;
+  width: auto;
+  padding: 3px;
   border-radius: 5px;
-  margin: 0 auto;
+  margin-bottom: 5px;
+}
+input[type=submit] {
+  padding: 1px;
+  width: 10%;
+  background-color: #1a77ce;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+}
+a {
+  cursor: pointer;
+}
+.sidepanel {
+  background-color: whitesmoke;
+  border-radius: 5px;
+}
+.complete-button {
+  border-radius: 10px;
+  cursor: pointer;
+  background-color: black;
+}
+.addTaskForm {
+  position: relative;
+  bottom: 10px;
 }
 </style>
