@@ -1,38 +1,38 @@
 <template>
-    <div class="container">
-        <div>
-            <div v-if="isLoggedIn">
-                <button @click="logoutUser" class="logout-button" >Logout</button>
-                <TaskList/>
-            </div>
-            <div v-else>
-                <div v-if="!showSignIn">
-                    <h3>Sign Up!</h3>
-                    <form @submit="onSignUp" class="sign-up-form">
-                        <input class="sign-up-form-email" type="email" v-model="signUpEmail" placeholder="Email" />
-                        <br/>
-                        <input class="sign-up-form-password" type="password" v-model="signUpPassword" placeholder="Password"/>
-                        <br/>
-                        <input type="submit" value="Sign up" class="sign-up-form-submit" />
-                        <br/>
-                        <p>Already a user? <a @click="showSignIn = true">Login.</a></p>
-                    </form>
-              </div>
-              <div v-if="showSignIn">
-                  <h3>Login!</h3>
-                  <form @submit="onLogin" class="login-form">
-                      <input class="login-form-email" type="text" v-model="loginEmail" placeholder="Email" />
-                      <br />
-                      <input class="login-form-password" type="password" v-model="loginPassword" placeholder="Password" />
-                      <br />
-                      <input type="submit" value="Login" class="login-form-submit" />
-                      <br/> 
-                      <p>Not a user? <a @click="showSignIn = False">Create an Account.</a></p>
-                  </form>
-              </div>
-            </div>
+  <v-container>
+    <div>
+      <div v-if="isLoggedIn">
+        <!-- <button @click="logoutUser" class="logout-button" >Logout</button> -->
+        <TaskList/>
+      </div>
+    <div v-else>
+      <div v-if="!showSignIn">
+        <h3>Sign Up!</h3>
+        <form @submit="onSignUp" class="sign-up-form">
+          <input class="sign-up-form-email" type="email" v-model="signUpEmail" placeholder="Email" />
+          <br/>
+          <input class="sign-up-form-password" type="password" v-model="signUpPassword" placeholder="Password"/>
+          <br/>
+          <input type="submit" value="Sign up" class="sign-up-form-submit" />
+          <br/>
+          <p>Already a user? <a @click="showSignIn = true">Login.</a></p>
+        </form>
+      </div>
+      <div v-if="showSignIn">
+      <h3>Login!</h3>
+      <form @submit="onLogin" class="login-form">
+          <input class="login-form-email" type="text" v-model="loginEmail" placeholder="Email" />
+          <br />
+          <input class="login-form-password" type="password" v-model="loginPassword" placeholder="Password" />
+          <br />
+          <input type="submit" value="Login" class="login-form-submit" />
+          <br/> 
+          <p>Not a user? <a @click="showSignIn = False">Create an Account.</a></p>
+      </form>
         </div>
+      </div>
     </div>
+  </v-container>
 </template>
 
 <script>
@@ -40,51 +40,51 @@ import "@/store/index.js";
 import { mapActions, mapGetters } from "vuex";
 import TaskList from "./TaskList.vue";
 export default {
-    name: "SessionManager",
-    computed: {
-        ...mapGetters(["getAuthToken", "getUserEmail", "getUserID", "isLoggedIn"]),
-    },
-    data() {
-        return {
-            signUpEmail: "",
-            signUpPassword: "",
-            loginEmail: "",
-            loginPassword: "",
-            showSignIn: true
-        };
-    },
-    methods: {
-        ...mapActions(["registerUser", "loginUser", "logoutUser"]),
-        onSignUp(event) {
-            event.preventDefault();
-            let data = {
-                user: {
-                    email: this.signUpEmail,
-                    password: this.signUpPassword,
-                },
-            };
-            this.registerUser(data);
-            this.resetData();
+  name: "SessionManager",
+  components: { TaskList },
+  computed: {
+    ...mapGetters(["getAuthToken", "getUserEmail", "getUserID", "isLoggedIn"]),
+  },
+  data() {
+    return {
+      signUpEmail: "",
+      signUpPassword: "",
+      loginEmail: "",
+      loginPassword: "",
+      showSignIn: true
+    };
+  },
+  methods: {
+    ...mapActions(["registerUser", "loginUser", "logoutUser"]),
+    onSignUp(event) {
+      event.preventDefault();
+      let data = {
+        user: {
+         email: this.signUpEmail,
+         password: this.signUpPassword,
         },
-        onLogin(event) {
-            event.preventDefault();
-            let data = {
-                user: {
-                    email: this.loginEmail,
-                    password: this.loginPassword,
-                },
-            };
-            this.loginUser(data);
-            this.resetData();
-        },
-        resetData() {
-            this.signUpEmail = "";
-            this.signUpPassword = "";
-            this.loginEmail = "";
-            this.loginPassword = "";
-        },
+      };
+      this.registerUser(data);
+      this.resetData();
     },
-    components: { TaskList }
+    onLogin(event) {
+      event.preventDefault();
+      let data = {
+        user: {
+          email: this.loginEmail,
+          password: this.loginPassword,
+        },
+      };
+      this.loginUser(data);
+      this.resetData();
+    },
+    resetData() {
+      this.signUpEmail = "";
+      this.signUpPassword = "";
+      this.loginEmail = "";
+      this.loginPassword = "";
+    },
+  },
 }
 </script>
 

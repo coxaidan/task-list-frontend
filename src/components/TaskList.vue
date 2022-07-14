@@ -1,38 +1,90 @@
 <template>
-<div>
-   <div class="container">
-    <h3 class="user-greeting">Hello, {{ getUserEmail }}</h3>
-    <div class="task-list">
-    <ul v-for="task in tasks" :key="task.id">
-      <div class="task-item">
-        <button @click="removeTask(task.id)" class="complete-task-button" type="checkbox"></button>
-        <div class="open-side-bar" @click="editTaskForm(task)"> 
-          <li class="list-task-name"> {{ task.name }} </li>
-          <li class="list-task-description"> {{ task.description }}</li> 
-        </div> 
-      </div>
-    </ul>
+  <v-container>
+
+    <!-- <h3 class="user-greeting">Hello, {{ getUserEmail }}</h3> -->
+
+    <!-- <div class="task-list">
+      <ul v-for="task in tasks" :key="task.id">
+        <div class="task-item" @click="editTaskForm(task)">
+          <v-btn elevation="3" icon @click="removeTask(task.id)" type="checkbox"></v-btn>
+          <div class="fill-height"> 
+            <li class="list-task-name"> {{ task.name }} </li>
+            <li class="list-task-description" > {{ task.description }}</li> 
+          </div> 
+        </div>
+      </ul>
     </div>
-    <form class="add-task-form" @submit="addTask">
-      <input class="form-task-name" type="text" v-model="newName" placeholder="Task Name" required/>
-      <textarea class="form-task-description" type="text" rows="4" cols="20" v-model="newDescription" placeholder="Task Description"></textarea>
-      <input type="Submit" value="Add Task"/>
-    </form>
-  </div>
-  <div class="sidepanel-wrap" v-if="showSidepanelForID != null">
+  <form class="add-task-form" @submit="addTask">
+    <input class="form-task-name" type="text" v-model="newName" placeholder="Task Name" required/>
+    <textarea class="form-task-description" type="text" rows="4" cols="20" v-model="newDescription" placeholder="Task Description"></textarea>
+    <input type="Submit" value="Add Task"/>
+  </form> -->
+
+  <!-- <div class="sidepanel-wrap" v-if="sidebarTaskID != null">
     <div class="sidepanel">
-      <form form @submit="editTask(showSidepanelForID, editName, editDescription)">
+      <form form @submit="editTask(sidebarTaskID, editName, editDescription)">
         <input class="form-task-name" type="text" v-model="editName" placeholder="Task name" required/>
         <textarea class="form-task-description" type="text" rows="3" cols="20" v-model="editDescription" placeholder="Task description"></textarea>
         <input type="Submit" value="Update Task"/>
       </form>  
-      <form form @submit="removeTask(showSidepanelForID)">
+      <form form @submit="removeTask(sidebarTaskID)">
         <input type="Submit" value="Delete Task"/>
       </form>
-      <button @click="showSidepanelForID=null">Cancel</button>
+      <button @click="sidebarTaskID=null">Cancel</button>
     </div> 
-  </div>
-</div>
+    </div> -->
+    
+    <v-card>
+      <v-layout>
+        <v-navigation-drawer v-model="drawer" temporary location="right">
+          <v-form
+            ref="form"
+            lazy-validation
+            @input="editTask(sidebarTaskID, editName, editDescription)"
+          >
+            <v-text-field
+              v-model="editName"
+              label="Name"
+              required
+            ></v-text-field>
+
+            <v-textarea
+              v-model="editDescription"
+              label="Description"
+            ></v-textarea>
+          </v-form>
+
+          <v-btn @click="removeTask(sidebarTaskID)">Delete</v-btn>
+
+          <v-btn @click="drawer=null">Cancel</v-btn>
+
+        </v-navigation-drawer>
+        <v-main style="height: auto">
+          <v-card class="mx-auto" max-width="auto">
+            <v-list density="compact">
+              <v-list-subheader>TASKS</v-list-subheader>
+              <v-list-item v-for="task in tasks" :key="task.id" active-color="primary" @click.stop="drawer = !drawer" @click="editTaskForm(task)" lines="2">
+                <v-list-item-header>
+                  <v-list-item-title v-text="task.name"></v-list-item-title>
+                  <v-list-item-subtitle v-text="task.description"></v-list-item-subtitle>
+                </v-list-item-header>
+              </v-list-item>
+              <v-divider></v-divider>
+              <v-list-item>
+                <v-text-field
+                  v-model="newName"
+                  label="Add a Task"
+                  placeholder="Enter task"
+                  @keyup.enter="addTask"
+                ></v-text-field>
+              </v-list-item>
+            </v-list>
+          </v-card>
+        </v-main>
+      </v-layout>
+    </v-card>
+  </v-container>
+  
 </template>
 
 <script>
@@ -58,7 +110,8 @@ export default {
       newDescription: "",
       editName: "",
       editDescription: "",
-      showSidepanelForID: null,
+      sidebarTaskID: null,
+      drawer: null
     };
   },
   created() {
@@ -112,21 +165,21 @@ export default {
           authorization: this.getAuthToken,
         },
       };        
-      // axios 
-      //   .delete(`${BASE_URL}/tasks/${id}`, config)
-      alert("complete")
+      axios 
+        .delete(`${BASE_URL}/tasks/${id}`, config)
     },
     editTaskForm(task) {
-      this.showSidepanelForID = task.id;
+      console.log(task.id)
+      this.sidebarTaskID = task.id;
       this.editName = task.name;
       this.editDescription = task.description;
-    },
-  }
+    }
+  },
 };
 </script>
 
 <style scoped>
-li {
+/* li {
     list-style: none;
 }
 ul:hover {
@@ -140,8 +193,8 @@ ul {
 form {
   display: flex;
   flex-direction: column;
-}
-button {
+} */
+/* button {
   width: 10%;
   padding: 2px;
   margin: 0 auto;
@@ -150,8 +203,8 @@ button {
   color: #fff;
   border: none;
   cursor: pointer;
-}
-input {
+} */
+/* input {
   width: auto;
   padding: 3px;
   border-radius: 5px;
@@ -179,15 +232,15 @@ input[type=submit] {
   position: absolute; 
   top: 15px; 
   left: 190px;
-}
-.sidepanel-wrap {
+} */
+/* .sidepanel-wrap {
   position: fixed;
   top: 0;
   bottom: 0;
   right: 0;
-  width: 30em;
+  width: 30em; */
   /* transform: translateX(100%); */
-  transition: .3s ease-out;
+  /* transition: .3s ease-out;
 }
 .sidepanel {
   position: absolute;
@@ -204,7 +257,7 @@ input[type=submit] {
   border-radius: 10px;
   cursor: pointer;
   background-color: black;
-}
+} */
 /* .add-task-form {
   position: fixed;
   bottom: 0;
@@ -213,22 +266,16 @@ input[type=submit] {
   padding: 5px;
   border-radius: 15px;
 } */
-.task-list {
+/* .task-list {
   margin: 4px, 4px;
   padding: 4px;
   width: 100%;
   height: 33em;
   overflow-x: hidden;
   overflow-y: auto;
-  text-align: justify;
+  text-align: justify; */
   /* border:1px solid green;   */
-}
-.open-side-bar {
-  transform: translateX(0%);
-}
-/* .container {
-  border: 1px solid red;  
-} */
+/* }
 .complete-task-button {
   position: flex;
   left: auto;
@@ -246,5 +293,5 @@ input[type=submit] {
 .task-item {
   display: inline-block;
   vertical-align: top;
-}
+} */
 </style>
