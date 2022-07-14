@@ -1,33 +1,42 @@
 <template>
-  <v-app>
-    <v-app-bar elevation="4" app>
-      <v-toolbar-title>To-do List</v-toolbar-title>
-      <v-icon @click="toggleTheme">mdi-theme-light-dark</v-icon>
+  <v-app >
+      <v-app-bar elevation="10" app>
+        <v-app-bar-title>To-do List</v-app-bar-title>
+        <v-icon @click="toggleTheme">mdi-theme-light-dark</v-icon>
 
-      <v-btn v-if="isLoggedIn" variant="text" icon="mdi-dots-vertical" @click.stop="drawer = !drawer"></v-btn>
+        <v-menu v-if="isLoggedIn" location="bottom">
+          <template v-slot:activator="{ props }">
+            <v-btn
+              color="primary"
+              dark
+              v-bind="props"
+              icon="mdi-dots-vertical"
+            ></v-btn>
+          </template>
+      
+          <v-list>
+            <v-list-item>
+              <v-btn @click="logoutUser">Logout</v-btn>
+            </v-list-item>
+          </v-list>
+        </v-menu>
     </v-app-bar>
 
-    <v-navigation-drawer
-        v-model="drawer"
-        bottom
-        temporary
-        location="right"
-        >
-      <v-btn @click="logoutUser">Logout</v-btn>
-    </v-navigation-drawer>
-    
-    
     <v-main>
       <v-container>
-        <!-- <HelloWorld/> -->
-        <SessionManager/>
+        <div v-if="!isLoggedIn">
+          <SessionManager/>
+        </div>
+        <div v-else>
+          <TaskList/>
+        </div>
       </v-container>
     </v-main>
+
   </v-app>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
 import SessionManager from './components/SessionManager.vue'
 import TaskList from './components/TaskList.vue'
 import { useTheme } from 'vuetify'
@@ -37,7 +46,6 @@ export default {
   name: 'App',
 
   components: {
-    HelloWorld,
     SessionManager,
     TaskList
   },

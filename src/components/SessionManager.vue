@@ -1,38 +1,68 @@
 <template>
-  <v-container>
-    <div>
-      <div v-if="isLoggedIn">
-        <!-- <button @click="logoutUser" class="logout-button" >Logout</button> -->
-        <TaskList/>
-      </div>
-    <div v-else>
-      <div v-if="!showSignIn">
-        <h3>Sign Up!</h3>
-        <form @submit="onSignUp" class="sign-up-form">
-          <input class="sign-up-form-email" type="email" v-model="signUpEmail" placeholder="Email" />
-          <br/>
-          <input class="sign-up-form-password" type="password" v-model="signUpPassword" placeholder="Password"/>
-          <br/>
-          <input type="submit" value="Sign up" class="sign-up-form-submit" />
-          <br/>
-          <p>Already a user? <a @click="showSignIn = true">Login.</a></p>
-        </form>
-      </div>
-      <div v-if="showSignIn">
-      <h3>Login!</h3>
-      <form @submit="onLogin" class="login-form">
-          <input class="login-form-email" type="text" v-model="loginEmail" placeholder="Email" />
-          <br />
-          <input class="login-form-password" type="password" v-model="loginPassword" placeholder="Password" />
-          <br />
-          <input type="submit" value="Login" class="login-form-submit" />
-          <br/> 
-          <p>Not a user? <a @click="showSignIn = False">Create an Account.</a></p>
-      </form>
-        </div>
-      </div>
-    </div>
-  </v-container>
+  <v-layout>
+    <v-container>
+        <v-main v-if="!isLoggedIn">
+
+          <v-card 
+            v-if="!showSignIn" 
+            class="pa-md-4 mx-lg-auto" 
+            width="auto"
+            max-width="800"
+            height="400"
+            tonal
+          >
+            <v-card-title>Create Account</v-card-title>
+            <v-form @submit="onSignUp">
+              <v-text-field 
+                v-model="signUpEmail" 
+                label="Email" 
+                required
+              ></v-text-field>
+              <v-text-field 
+                v-model="signUpPassword" 
+                label="Password" 
+                required 
+                type="password"
+              ></v-text-field>
+              
+              <v-card-actions>
+                <v-btn type="submit" color="primary">Sign Up</v-btn>
+              </v-card-actions>
+            </v-form>
+            <v-card-text>Already have an account? <a style="color: rgb(187,134,252)"  @click="showSignIn = true" variant="text">Sign-In.</a></v-card-text>
+          </v-card>
+
+          <v-card 
+            v-if="showSignIn"
+            class="pa-md-4 mx-lg-auto" 
+            width="auto"
+            max-width="800"
+            height="400"
+            tonal
+          >
+            <v-card-title>Sign-In</v-card-title>
+            <v-form @submit="onLogin">
+                <v-text-field 
+                  v-model="loginEmail" 
+                  label="Email" 
+                  required
+                ></v-text-field>
+                <v-text-field 
+                  v-model="loginPassword" 
+                  label="Password" 
+                  required 
+                  type="password"
+                ></v-text-field>
+                <v-card-actions>
+                  <v-btn type="submit" color="primary">Login</v-btn>
+                </v-card-actions>
+            </v-form>
+            <v-card-text>Not registered? <a style="color: rgb(187,134,252)" @click="showSignIn = false" variant="text">Create an Account.</a></v-card-text>
+          </v-card>
+
+        </v-main>
+    </v-container>
+  </v-layout>
 </template>
 
 <script>
@@ -87,93 +117,3 @@ export default {
   },
 }
 </script>
-
-<style scoped>
-a {
-  color: blue;
-  cursor: pointer;
-}
-
-a:hover {
-  color: rgb(0, 0, 225);
-}
-.container {
-  width: 90%;
-  margin: 0 auto;
-}
-.sign-up-form {
-  width: 100%;
-}
-.sign-up-form-email {
-  width: 35%;
-  padding: 10px;
-  margin: 0 auto;
-  border-radius: 5px;
-  border: 1px solid #ccc;
-}
-.sign-up-form-password {
-  width: 35%;
-  padding: 10px;
-  margin: 0 auto;
-  border-radius: 5px;
-  border: 1px solid #ccc;
-}
-.sign-up-form-submit {
-  width: 15%;
-  padding: 1em;
-  margin: 0 auto;
-  border-radius: 5px;
-  background-color: #1a77ce;
-  color: #fff;
-  border: none;
-}
-.sign-up-form-submit:hover {
-  background-color: #0d5c8a;
-  cursor: pointer;
-}
-
-.login-form {
-  width: 100%;
-}
-.login-form-email {
-  width: 35%;
-  padding: 10px;
-  margin: 0 auto;
-  border-radius: 5px;
-  border: 1px solid #ccc;
-}
-.login-form-password {
-  width: 35%;
-  padding: 10px;
-  margin: 0 auto;
-  border-radius: 5px;
-  border: 1px solid #ccc;
-}
-.login-form-submit {
-  width: 15%;
-  padding: 1em;
-  margin: 0 auto;
-  border-radius: 5px;
-  background-color: #1a77ce;
-  color: #fff;
-  border: none;
-}
-.login-form-submit:hover {
-  background-color: #0d5c8a;
-  cursor: pointer;
-}
-.logout-button {
-  width: 10%;
-  padding: 1em;
-  margin: 0 auto;
-  border-radius: 5px;
-  background-color: #1a77ce;
-  color: #fff;
-  border: none;
-  position:absolute; top:0; right:0;
-}
-.logout-button:hover {
-  background-color: #0d5c8a;
-  cursor: pointer;
-} 
-</style>
