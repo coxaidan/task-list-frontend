@@ -1,66 +1,62 @@
 <template>
   <v-layout>
     <v-container>
-        <v-main v-if="!isLoggedIn">
+        <v-card 
+          v-if="!showSignIn" 
+          class="pa-md-4 mx-lg-auto" 
+          width="auto"
+          max-width="800"
+          height="400"
+          tonal
+        >
+          <v-card-title>Create Account</v-card-title>
+          <v-form @submit="onSignUp">
+            <v-text-field 
+              v-model="signUpEmail" 
+              label="Email" 
+              required
+            ></v-text-field>
+            <v-text-field 
+              v-model="signUpPassword" 
+              label="Password" 
+              required 
+              type="password"
+            ></v-text-field>
+            
+            <v-card-actions>
+              <v-btn type="submit" color="primary">Sign Up</v-btn>
+            </v-card-actions>
+          </v-form>
+          <v-card-text>Already have an account? <a style="color: rgb(187,134,252)" @click="showSignIn = true" variant="text">Sign-In</a></v-card-text>
+        </v-card>
 
-          <v-card 
-            v-if="!showSignIn" 
-            class="pa-md-4 mx-lg-auto" 
-            width="auto"
-            max-width="800"
-            height="400"
-            tonal
-          >
-            <v-card-title>Create Account</v-card-title>
-            <v-form @submit="onSignUp">
+        <v-card 
+          v-if="showSignIn"
+          class="pa-md-4 mx-lg-auto" 
+          width="auto"
+          max-width="800"
+          height="400"
+          tonal
+        >
+          <v-card-title>Sign-In</v-card-title>
+          <v-form @submit="onLogin">
               <v-text-field 
-                v-model="signUpEmail" 
+                v-model="loginEmail" 
                 label="Email" 
                 required
               ></v-text-field>
               <v-text-field 
-                v-model="signUpPassword" 
+                v-model="loginPassword" 
                 label="Password" 
                 required 
                 type="password"
               ></v-text-field>
-              
               <v-card-actions>
-                <v-btn type="submit" color="primary">Sign Up</v-btn>
+                <v-btn type="submit" color="primary">Login</v-btn>
               </v-card-actions>
-            </v-form>
-            <v-card-text>Already have an account? <a style="color: rgb(187,134,252)"  @click="showSignIn = true" variant="text">Sign-In.</a></v-card-text>
-          </v-card>
-
-          <v-card 
-            v-if="showSignIn"
-            class="pa-md-4 mx-lg-auto" 
-            width="auto"
-            max-width="800"
-            height="400"
-            tonal
-          >
-            <v-card-title>Sign-In</v-card-title>
-            <v-form @submit="onLogin">
-                <v-text-field 
-                  v-model="loginEmail" 
-                  label="Email" 
-                  required
-                ></v-text-field>
-                <v-text-field 
-                  v-model="loginPassword" 
-                  label="Password" 
-                  required 
-                  type="password"
-                ></v-text-field>
-                <v-card-actions>
-                  <v-btn type="submit" color="primary">Login</v-btn>
-                </v-card-actions>
-            </v-form>
-            <v-card-text>Not registered? <a style="color: rgb(187,134,252)" @click="showSignIn = false" variant="text">Create an Account.</a></v-card-text>
-          </v-card>
-
-        </v-main>
+          </v-form>
+          <v-card-text>Not registered? <a style="color: rgb(187,134,252)" @click="showSignIn = false" variant="text">Create an Account</a></v-card-text>
+        </v-card>
     </v-container>
   </v-layout>
 </template>

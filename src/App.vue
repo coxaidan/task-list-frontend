@@ -1,36 +1,38 @@
 <template>
-  <v-app >
-      <v-app-bar elevation="10" app>
-        <v-app-bar-title>To-do List</v-app-bar-title>
-        <v-icon @click="toggleTheme">mdi-theme-light-dark</v-icon>
+  <v-app>
+    <v-app-bar elevation="2" app>
+      <v-icon>mdi-check-all</v-icon>
+      <v-app-bar-title>To do</v-app-bar-title>
+      <v-icon @click="toggleTheme">mdi-theme-light-dark</v-icon>
 
-        <v-menu v-if="isLoggedIn" location="bottom">
-          <template v-slot:activator="{ props }">
-            <v-btn
-              color="primary"
-              dark
-              v-bind="props"
-              icon="mdi-dots-vertical"
-            ></v-btn>
-          </template>
-      
-          <v-list>
-            <v-list-item>
-              <v-btn @click="logoutUser">Logout</v-btn>
-            </v-list-item>
-          </v-list>
-        </v-menu>
+      <v-menu v-if="isLoggedIn" location="bottom">
+        <template v-slot:activator="{ props }">
+          <v-btn
+            color="primary"
+            dark
+            v-bind="props"
+            icon="mdi-dots-vertical"
+          ></v-btn>
+        </template>
+    
+        <v-list>
+          <v-list-item>
+            <v-btn color="primary">Account</v-btn>
+          </v-list-item>
+          <v-list-item>
+            <v-btn @click="logoutUser" color="primary">Logout</v-btn>
+          </v-list-item>
+        </v-list>
+      </v-menu>
     </v-app-bar>
 
     <v-main>
-      <v-container>
-        <div v-if="!isLoggedIn">
-          <SessionManager/>
-        </div>
-        <div v-else>
-          <TaskList/>
-        </div>
-      </v-container>
+      <div v-if="!isLoggedIn">
+        <SessionManager/>
+      </div>
+      <div v-else>
+        <TaskList/>
+      </div>
     </v-main>
 
   </v-app>

@@ -1,71 +1,71 @@
 <template>
-  <v-layout>
-    <v-container>
-      <v-navigation-drawer 
-        v-model="drawer" 
-        class="pa-md-4 mx-lg-auto" 
-        temporary 
-        location="right"
-        width="400"
+  <v-layout @keydown.esc="drawer = false">
+    <v-navigation-drawer 
+      v-model="drawer" 
+      class="pa-md-4 mx-lg-auto" 
+      location="right"
+      width="400" 
+    >
+      <div class="d-flex flex-row-reverse">
+        <v-icon @click="drawer=null">mdi-close</v-icon>
+      </div>
+      <v-form
+        ref="form"
+        lazy-validation
+        @submit="editTask(selectedTaskID, editName, editDescription)"
       >
-        <div class="d-flex flex-row-reverse">
-          <v-icon @click="drawer=null">mdi-close</v-icon>
-        </div>
-          <v-form
-            ref="form"
-            lazy-validation
-            @onfocusout="editTask(selectedTaskID, editName, editDescription)"
-          >
-            <v-text-field
-              v-model="editName"
-              label="Name"
-              required
-            ></v-text-field>
-            <v-textarea
-              v-model="editDescription"
-              label="Description"
-            ></v-textarea>
-          </v-form>
+        <v-text-field
+          v-model="editName"
+          label="Name"
+          required
+        ></v-text-field>
+        <v-textarea
+          v-model="editDescription"
+          label="Description"
+        ></v-textarea>
+        <v-btn type=submit color="primary">Update</v-btn>
+      </v-form>
+      <div class="d-flex flex-row-reverse">
+        <v-icon @click="removeTask(selectedTaskID)">mdi-delete</v-icon>
+      </div>  
+    </v-navigation-drawer>
 
-          <div class="d-flex flex-row-reverse flex-colulmn">
-            <v-icon @click="removeTask(selectedTaskID)">mdi-delete</v-icon>
-          </div>  
-
-        </v-navigation-drawer>
-
-        <v-main>
+      <v-main>
+        <v-container>
           <v-card 
-            class="pa-md-4 mx-lg-auto"
-           tonal
+          class="pa-md-4 mx-lg-auto"
+          tonal
           >
             <v-card-title>TASKS</v-card-title>
             <v-list 
-              height="500"
+              height="535"
               density="compact"
               overflow-y="auto"
               >
               <v-list-item 
                 v-for="task in tasks" 
                 :key="task.id" 
-                @click.stop="drawer = !drawer" 
+                active-color="blue"
                 @click="editTaskForm(task)" 
-                lines="2"
+                lines="3"
+                variant="plain"
                 >            
                 <v-list-item-header> 
                   <v-list-item-title v-text="task.name"></v-list-item-title>
                   <v-list-item-subtitle v-text="task.description"></v-list-item-subtitle>
+                  <v-divider></v-divider>
                 </v-list-item-header>
-              </v-list-item>
+              </v-list-item>   
             </v-list>
             <v-text-field
               v-model="newName"
               label="Add a Task"
               placeholder="Enter task"
-              @keyup.enter="addTask"
+              @keydown.enter="addTask"
             ></v-text-field>
           </v-card>
-        </v-main>
-      </v-container>
+        </v-container>
+      </v-main>
     </v-layout>
 </template>
 
@@ -83,21 +83,20 @@ export default {
   data() {
     return {
       tasks: null,
-      // task: {
-      //   names: [],
-      //   descriptions: [],
-      //   ids: []
-      // },
       newName: "",
       newDescription: "",
       editName: "",
       editDescription: "",
       selectedTaskID: null,
-      drawer: null
+      drawer: false
     };
   },
   created() {
-    const config = {
+    this.getTasks()
+  },
+  methods: {
+    getTasks() {
+      const config = {
       headers: {
         authorization: this.getAuthToken,
       },
@@ -106,8 +105,7 @@ export default {
       .get(`${BASE_URL}/tasks`, config)
       .then((response) => (this.tasks = response.data))
       .catch((error) => console.log(error));
-  },
-  methods: {
+    },
     addTask() {
       const data = {
         task: {
@@ -123,6 +121,9 @@ export default {
       };
       axios
         .post(`${BASE_URL}/tasks`, data, config)
+        .then(() => {
+          this.getTasks()
+        })
         .catch((error) => console.log(error));
     }, 
     editTask(id, _name, _description) {
@@ -140,7 +141,10 @@ export default {
       };
       axios
         .put(`${BASE_URL}/tasks/${id}`, data, config)
-        window.location.reload();
+        .then(() => {
+          this.getTasks()
+        })
+        .catch((error) => console.log(error));
     },
     removeTask(id) {
       const config = {
@@ -150,9 +154,17 @@ export default {
       };        
       axios 
         .delete(`${BASE_URL}/tasks/${id}`, config)
+        .then(() => {
+          this.getTasks()
+        })
+        .catch((error) => console.log(error));
     },
     editTaskForm(task) {
-      console.log(task.id)
+      if (this.drawer == task.id) {
+        this.drawer = false
+      } else {
+        this.drawer = task.id
+      }
       this.selectedTaskID = task.id;
       this.editName = task.name;
       this.editDescription = task.description;
