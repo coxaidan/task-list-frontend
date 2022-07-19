@@ -1,10 +1,9 @@
 <template>
-  <v-app>
-    <v-app-bar elevation="2" app>
-      <v-icon>mdi-check-all</v-icon>
-      <v-app-bar-title>To do</v-app-bar-title>
-      <v-icon @click="toggleTheme">mdi-theme-light-dark</v-icon>
+  <v-app> 
 
+    <v-app-bar elevation="1" app>
+      <v-app-bar-title class="text-h3 font-weight-bold">ToDoList</v-app-bar-title>
+      <v-icon @click="toggleTheme">mdi-theme-light-dark</v-icon>
       <v-menu v-if="isLoggedIn" location="bottom">
         <template v-slot:activator="{ props }">
           <v-btn
@@ -14,7 +13,6 @@
             icon="mdi-dots-vertical"
           ></v-btn>
         </template>
-    
         <v-list>
           <v-list-item>
             <v-btn color="primary">Account</v-btn>
@@ -27,12 +25,12 @@
     </v-app-bar>
 
     <v-main>
-      <div v-if="!isLoggedIn">
-        <SessionManager/>
-      </div>
-      <div v-else>
-        <TaskList/>
-      </div>
+      <v-container fluid>
+        <SessionManager v-if="!isLoggedIn"/>
+        <TaskList v-else/>
+ 
+        <!-- <router-view></router-view> -->
+      </v-container>
     </v-main>
 
   </v-app>
@@ -50,7 +48,7 @@ export default {
   components: {
     SessionManager,
     TaskList
-  },
+  },  
 
   computed: {
     ...mapGetters(["getAuthToken", "getUserEmail", "getUserID", "isLoggedIn"]),
