@@ -1,162 +1,199 @@
 <template>
-  <v-container @keydown.esc="drawer = null">
-      <!-- <v-navigation-drawer 
-      v-model="drawer" 
-      class="pa-5 mx-auto" 
-      location="right"
-      width="400"
-    >
-      <div class="d-flex flex-row-reverse">
-        <v-icon @click="drawer=null">mdi-close</v-icon>
-      </div>
-      <v-form
-        @submit="editTask(selectedTaskID, editName, editDescription)"
-      >
-        <v-text-field
-          v-model="editName"
-          label="Name"
-          required
-        ></v-text-field>
-        <v-textarea
-          v-model="editDescription"
-          label="Description"
-        ></v-textarea>
-        <v-btn type=submit color="primary">Update</v-btn>
-      </v-form>
-      <div class="d-flex flex-row-reverse">
-        <v-icon @click="removeTask(selectedTaskID)">mdi-delete</v-icon>
-      </div>  
-    </v-navigation-drawer>
-
-    <v-main>
-        <v-container>
-          <v-card 
-          class="pa-md-4 mx-auto"
-          tonal
-          >
-            <v-card-title>TASKS</v-card-title>
-            <v-list 
-              height="535"
-              density="compact"
-              overflow-y="auto"
-              >
-              <v-list-item 
-                v-for="task in tasks" 
-                :key="task.id" 
-                active-color="blue"
-                @click="editTaskForm(task)" 
-                lines="3"
-                variant="plain"
-                >            
-                <v-list-item-header> 
-                  <v-list-item-title v-text="task.name"></v-list-item-title>
-                  <v-list-item-subtitle v-text="task.description"></v-list-item-subtitle>
-                  <v-divider></v-divider>
-                </v-list-item-header>
-              </v-list-item>   
-            </v-list>
-            <v-text-field
-              v-model="newName"
-              label="Add a Task"
-              placeholder="Enter task"
-              @keydown.enter="addTask"
-            ></v-text-field>
-          </v-card>
-        </v-container>
-      </v-main> -->
+  <v-container>
 
     <v-card
-      class="pa-5 mx-auto" 
-      max-width="140vh"
-      height="84vh"
+      class="pa-4 mx-auto" 
+      max-width="120vh"
+      max-height="84vh"
       tonal
+      min-width="1000px"
     >
-      <v-card-title>Tasks</v-card-title>
-      <v-divider/>
+      <v-toolbar
+        color="dark"
+      >
+        <v-toolbar-title>My Tasks
+            <v-btn 
+              class="ml-5"
+              v-if="!showAddTask"
+              color="blue" 
+              icon="mdi-text-box-plus-outline"
+              @click="showAddTask = true"
+            ></v-btn>
+        </v-toolbar-title>
+        <!-- TODO <v-btn variant="text" icon="mdi-sort"></v-btn> -->
+      </v-toolbar>
+      
+      <v-text-field
+        class="pt-3"
+        v-if="showAddTask"
+        v-model="newName"
+        label="Add a Task"
+        placeholder=""
+        variant="outlined"
+        color="blue"
+        autofocus
+        hide-details
+        
+        @keydown.enter="addTask(), newName='', showAddTask = false"  
+        @keydown.esc="showAddTask = false"
+      ></v-text-field>
 
       <v-list
+        id="task_list"
         overflow-y="auto"
-        height="66vh"
+        height="68vh"
+        lines="2"
       >
         <v-list-item
           v-for="task in tasks" 
           :key="task.id"
-          :value="task"
-          active-color="primary"
-          lines="three"
-          :title="task.name"
-          :subtitle="task.description"
-          @click="setTaskInputFields(task)"
         >
           <v-list-item-avatar start>
-            <v-icon 
-              v-if="!isCheckBoxHovered || hoveredCheckBoxID != task.id" 
-              @mouseenter="isCheckBoxHovered = true, hoveredCheckBoxID = task.id"
-            >mdi-checkbox-blank-outline</v-icon>
-            <v-icon 
-              v-if="isCheckBoxHovered && hoveredCheckBoxID == task.id" 
-              @mouseleave="isCheckBoxHovered = false" 
-              @click=" removeTask(task.id)"
-            >mdi-checkbox-marked-outline</v-icon>
+            <v-hover
+              v-slot="{ isHovering, props }"
+            >
+              <v-btn
+                variant="text"
+                :icon="isHovering ? 'mdi-checkbox-marked-outline' : 'mdi-checkbox-blank-outline'"
+                :color="isHovering ? 'green' : 'dark'"
+                @click="removeTask(task.id)"
+                v-bind="props"
+              >
+              </v-btn>
+            </v-hover>
           </v-list-item-avatar>
-        </v-list-item>   
+          <v-list-item-header>
+            <v-list-item-title>{{ task.name }}</v-list-item-title>
+            <v-list-item-subtitle>{{ task.description }}</v-list-item-subtitle>
+          </v-list-item-header>
+
+          <v-spacer></v-spacer>
+          <v-list-item-avatar>
+            <v-hover
+              v-slot="{ isHovering, props }"
+            >
+              <v-btn
+                variant="text"
+                :icon="isHovering ? 'mdi-star' : 'mdi-star-outline'"
+                v-bind="props"
+                :color="isHovering ? 'yellow' : 'dark'"
+              >
+              </v-btn>
+            </v-hover>
+          </v-list-item-avatar> 
+          <v-list-item-avatar>
+            <v-hover
+              v-slot="{ isHovering, props }"
+            >
+              <v-btn
+                variant="text"
+                :icon="isHovering ? 'mdi-pencil' : 'mdi-pencil-outline'"
+                :color="isHovering ? 'blue' : 'dark'"
+                @click="setTaskInputFields(task)"
+                v-bind="props"
+              >
+              </v-btn>
+            </v-hover>
+          </v-list-item-avatar>
+          <v-list-item-avatar>
+            <v-hover
+              v-slot="{ isHovering, props }"
+            >
+              <v-btn
+                variant="text"
+                :icon="isHovering ? 'mdi-delete-empty' : 'mdi-delete'"
+                :color="isHovering ? 'red' : 'dark'"
+                @click="deleteConfirmation = true, deleteTaskID = task.id, deleteTaskName = task.name"
+                v-bind="props"
+              >
+              </v-btn>
+            </v-hover>
+          </v-list-item-avatar>        
+        </v-list-item>  
       </v-list>
 
-      <v-text-field
-        v-model="newName"
-        label="Add a Task"
-        placeholder="Enter task"
-        @keydown.enter="addTask()"
-      ></v-text-field>
-      
-
-      <v-navigation-drawer
-        class="mt-24"
-        v-model="drawer" 
-        location="right"
-        width="400"
-      >
-        <v-card 
-          tonal
-          class="pa-5 mx-auto d-flex flex-column"
-          width="auto"
-          elevation="1"
-          height="auto"
+      <v-container>
+        <v-row justify="center">
+        <v-dialog
+          v-model="editTaskDialog"
+          persistent
         >
-          <v-card-item>
-            <v-form
-              @submit="editTask(selectedTaskID, editName, editDescription)"
-              v-model="valid"
-            >
+          <v-card 
+            class="pa-4 mx-auto"
+            min-height="50%"
+            min-width="600px"
+          >
+            <v-card-title>
+              <span class="text-h5">Task</span>
+            </v-card-title>
+            <v-card-text>
+            <v-container>
               <v-text-field
                 v-model="editName"
-                label="Name"
-                required
               ></v-text-field>
-
               <v-textarea
+                label="Note"
                 v-model="editDescription"
-                label="Description"
-                no-resize
               ></v-textarea>
+            </v-container>
+            </v-card-text>
+              <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn
+                  color="blue-darken-1"
+                  text
+                  @click="editTaskDialog = false"
+                >Cancel</v-btn>
+                <v-btn
+                  color="blue-darken-1"
+                  text
+                  
+                  @click="editTask(); editTaskDialog = false"
+                  >Save</v-btn>
+              </v-card-actions>
+            </v-card>
+          </v-dialog>
+        </v-row>
+      </v-container>
 
-              <v-btn type=submit color="primary" location="right">Update</v-btn>
-            </v-form>
-          </v-card-item>
-          <v-spacer/>
-          <v-card-actions location="right">
-            <v-btn @click="drawer=null" icon="mdi-close"></v-btn>
-            <v-btn @click="removeTask(selectedTaskID)" icon="mdi-delete" right></v-btn>
-          </v-card-actions>
-        </v-card>
-      </v-navigation-drawer>
+      <v-container>
+        <v-row justify="center">
+          <v-dialog
+            v-model="deleteConfirmation"
+            persistent
+          >
+            <v-card>
+              <v-card-title class="text-h5">
+                Delete Task
+              </v-card-title>
+              <v-card-text>"{{deleteTaskName}}" will be permanatly deleted.</v-card-text>
+              <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn
+                  color="red"
+                  @click="deleteConfirmation = false, removeTask(deleteTaskID)"
+                >
+                  Delete
+                </v-btn>
+                <v-btn
+                  @click="deleteConfirmation = false"
+                >
+                  Cancel
+                </v-btn>
+              </v-card-actions>
+            </v-card>
+          </v-dialog>
+        </v-row>
+      </v-container>
+
     </v-card>
   </v-container>
 </template>
 
 <script>
+import "@/store/index.js";
 import axios from "axios";
-import { mapGetters } from "vuex";
+import { mapActions, mapGetters } from "vuex";
 
 const BASE_URL = "http://localhost:3000";
 
@@ -172,12 +209,13 @@ export default {
       newDescription: "",
       editName: "",
       editDescription: "",
-      isCheckBoxHovered: false,
-      hoveredCheckBoxID: null,
-      open: ['task.id'],
-      drawer: null,
-      selectedTaskID: null
-      
+      editTaskID: null,
+
+      editTaskDialog: false,
+      showAddTask: false,
+      deleteConfirmation: false,
+      deleteTaskID: null,
+      deleteTaskName: ""
     };
   },
   created() {
@@ -187,6 +225,7 @@ export default {
     getTasks() {
       const config = {
         headers: {
+          // authorization: localStorage.getItem("auth_token"),
           authorization: this.getAuthToken,
         },
       };
@@ -214,14 +253,15 @@ export default {
         .post(`${BASE_URL}/tasks`, data, config)
         .then(() => {
           this.getTasks()
+          $("#task_list").scrollTop(0)
         })
         .catch((error) => console.log(error));
     }, 
-    editTask(id, _name, _description) {
+    editTask() {
       const data = {
         task: {
-          name: _name,
-          description: _description,
+          name: this.editName,
+          description: this.editDescription,
           user_id: this.getUserID
         }
       };
@@ -231,7 +271,7 @@ export default {
         },
       };
       axios
-        .put(`${BASE_URL}/tasks/${id}`, data, config)
+        .put(`${BASE_URL}/tasks/${this.editTaskID}`, data, config)
         .then(() => {
           this.getTasks()
         })
@@ -251,15 +291,13 @@ export default {
         .catch((error) => console.log(error));
     },
     setTaskInputFields(task) {
-      if (this.drawer == task.id) {
-        this.drawer = null
-      } else {
-        this.drawer = task.id
-      }
-      this.selectedTaskID = task.id;
+      this.editTaskDialog = true
+      this.editTaskID = task.id;
       this.editName = task.name;
       this.editDescription = task.description;
-    }
+      this.dateCreated = task.created_at
+    }, 
   },
 };
 </script>
+

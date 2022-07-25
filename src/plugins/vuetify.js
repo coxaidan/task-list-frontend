@@ -10,7 +10,15 @@ import { createVuetify } from 'vuetify'
 
 export default createVuetify({
   theme: {
-    defaultTheme: 'light'
+    defaultTheme: 'light',
+    themes: {
+      myCustomTheme: {
+        dark: false,
+        colors: {
+          something: '#00ff00'
+        }
+      }
+    }
   }
 },
   components,

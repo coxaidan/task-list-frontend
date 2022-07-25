@@ -45,6 +45,7 @@ const actions = {
         .post(`${BASE_URL}/users/sign_in`, payload)
         .then((response) => {
           commit("setUserInfo", response);
+          console.log(response)
           resolve(response);
         })
         .catch((error) => {
@@ -58,6 +59,7 @@ const actions = {
         authorization: state.auth_token,
       },
     };
+    console.log(state.auth_token)
     new Promise((resolve, reject) => {
       axios
         .delete(`${BASE_URL}/users/sign_out`, config)
@@ -99,6 +101,7 @@ const mutations = {
   setUserInfoFromToken(state, data) {
     state.user = data.data.user;
     state.auth_token = localStorage.getItem("auth_token");
+    
   },
   resetUserInfo(state) {
     state.user = {

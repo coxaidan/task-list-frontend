@@ -7,6 +7,6 @@ export default createStore({
   mutations: {},
   actions: {},
   modules: {
-    sessionManager
+    sessionManager,
   },
 })
