@@ -1,6 +1,6 @@
 <template>
   <v-container>
-    <v-card class="pa-5 mx-auto" max-width="500px" height="350px" tonal>
+    <v-card class="sign-in pa-5 mx-auto" max-width="500px" height="350px" tonal>
       <v-card-title>Sign-In</v-card-title>
       <v-form
         ref="signInForm"
@@ -16,6 +16,7 @@
           variant="outlined"
         ></v-text-field>
         <v-text-field
+          class="mt-n2"
           v-model="loginPassword"
           prepend-inner-icon="mdi-lock"
           label="Password"
@@ -24,7 +25,7 @@
           type="password"
         ></v-text-field>
         <v-alert
-          class="mb-n3 mt-n7"
+          class="mb-n9 mt-n3"
           v-if="incorrectLogin"
           type="error"
           icon="mdi-alert-circle"
@@ -32,7 +33,7 @@
         >
         <br />
         <v-btn
-          class="mb-n3"
+          class="mb-n9 mt-3"
           @click="validateSignIn()"
           color="primary"
           width="490px"
@@ -53,7 +54,7 @@
 </template>
 
 <script>
-import "@/store/index.js";
+import store from "@/store/index.js";
 import { mapActions, mapGetters } from "vuex";
 export default {
   name: "SignIn",
@@ -72,20 +73,25 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(["isLoggedIn"]),
+    ...mapGetters(["isLoggedIn", "getAuthToken"]),
   },
   methods: {
     ...mapActions(["loginUser"]),
-    onLogin(event) {
-      // event.preventDefault();
+    async onLogin() {
       let data = {
         user: {
           email: this.loginEmail,
           password: this.loginPassword,
         },
       };
-      this.loginUser(data);
-      // this.resetData();
+
+      let response = await this.loginUser(data);
+      if (response != 401) {
+        this.$router.push("/todolist");
+        this.resetData();
+      } else {
+        this.incorrectLogin = true;
+      }
     },
     resetData() {
       this.loginEmail = "";
@@ -94,27 +100,19 @@ export default {
     validateSignIn() {
       this.$refs.signInForm.validate();
 
-      console.log(`validSignIn: ${this.validSignIn}`);
-      console.log(`loginEmail: ${this.loginEmail}`);
-      console.log(`loginPassword: ${this.loginPassword}`);
-      
       if (this.validSignIn) {
         this.onLogin();
-        console.log("Logged In: " + this.isLoggedIn);
-        if (this.isLoggedIn) {
-          this.$router.push("/todolist");
-          this.resetData();
-        } else {
-          this.incorrectLogin = true;
-        }
       }
     },
   },
 };
 </script>
 
-<style>
+<style scoped>
 p {
   color: white;
+}
+.sign-in {
+  background: rgba(255, 255, 255, 0.8);
 }
 </style>

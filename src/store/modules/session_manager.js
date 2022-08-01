@@ -6,6 +6,8 @@ const state = {
   auth_token: null,
   user: {
     id: null,
+    first_name: null,
+    last_name: null,
     username: null,
     email: null,
   },
@@ -24,42 +26,55 @@ const getters = {
     const loggedOut = state.auth_token == null || state.auth_token == JSON.stringify(null);
     return !loggedOut;
   },
+  getUserFirstName(state) {
+    return state.user?.first_name;
+  },
+  getUserLastName(state) {
+    return state.user?.last_name;
+  },
 };
 const actions = {
   registerUser({ commit }, payload) {
     return new Promise((resolve, reject) => {
       axios
         .post(`${BASE_URL}/users`, payload)
-        .then((response) => {
+        .then(response => {
           commit("setUserInfo", response);
           resolve(response);
         })
-        .catch((error) => {
+        .catch(error => {
           reject(error);
         });
     });
   },
-  loginUser({ commit }, payload) {
-    new Promise((resolve, reject) => {
-      axios
-        .post(`${BASE_URL}/users/sign_in`, payload)
-        .then((response) => {
-          commit("setUserInfo", response);
-          console.log(response)
-          resolve(response);
-        })
-        .catch((error) => {
-          reject(error);
-        });
-    });
+  async loginUser({ commit }, payload) {
+    try {
+      const response = await axios
+        .post(`${BASE_URL}/users/sign_in`, payload);
+      commit("setUserInfo", response);
+    } catch (error) {
+      return error.response.status;
+    }
   },
+  // loginUser({ commit }, payload) {
+  //   new Promise((resolve, reject) => {
+  //     axios
+  //       .post(`${BASE_URL}/users/sign_in`, payload)
+  //       .then(response => {
+  //         commit("setUserInfo", response);
+  //         resolve(response);
+  //       })
+  //       .catch(error => {
+  //         reject(error);
+  //       });
+  //   });
+  // },
   logoutUser({ commit }) {
     const config = {
       headers: {
-        authorization: state.auth_token,
+        authorization: state.auth_token
       },
     };
-    console.log(state.auth_token)
     new Promise((resolve, reject) => {
       axios
         .delete(`${BASE_URL}/users/sign_out`, config)
@@ -68,6 +83,7 @@ const actions = {
           resolve();
         })
         .catch((error) => {
+          console.log(error)
           reject(error);
         });
     });
@@ -101,11 +117,12 @@ const mutations = {
   setUserInfoFromToken(state, data) {
     state.user = data.data.user;
     state.auth_token = localStorage.getItem("auth_token");
-    
   },
   resetUserInfo(state) {
     state.user = {
       id: null,
+      first_name: null,
+      last_name: null,
       username: null,
       email: null,
     };

@@ -1,36 +1,19 @@
 <template>
-  <v-app> 
-
+  <v-app>
     <span class="background"></span>
-    <v-app-bar elevation="1" app>
-      <v-app-bar-title v-if="!isLoggedIn" class="text-h3 font-weight-bold">
-        <router-link to="/">Ulist</router-link>
+    <v-app-bar class="task-list-app-bar" elevation="1" app>
+      <v-app-bar-title class="text-h3 font-weight-bold">
+        <router-link :to="!isLoggedIn ? '/' : '/todolist'">Ulist</router-link>
       </v-app-bar-title>
-      <v-app-bar-title v-else class="text-h3 font-weight-bold">
-        <router-link to="/todolist">Ulist</router-link>
-      </v-app-bar-title>
-      <router-link 
-        v-if="this.$route.path == '/' && !isLoggedIn" 
-        to="/login"
+      <v-app-bar-title v-if="isLoggedIn" class="greeting"
+        >{{ greeting }}, {{ getUserFirstName }}</v-app-bar-title
       >
+      <router-link v-if="this.$route.path == '/' && !isLoggedIn" to="/login">
         <v-btn>Login</v-btn>
       </router-link>
-      <router-link 
-        v-if="this.$route.path == '/' && !isLoggedIn" 
-        to="/register"
-      >
-        <v-btn variant="flat" color="blue">Get Started</v-btn>
-      </router-link>
-      <v-menu 
-        v-if="isLoggedIn" 
-        location="bottom" 
-        color="dark"
-      >
+      <v-menu v-if="isLoggedIn" location="bottom" color="dark">
         <template v-slot:activator="{ props }">
-          <v-btn
-            v-bind="props"
-            icon="mdi-menu"
-          ></v-btn>
+          <v-btn v-bind="props" icon="mdi-menu"></v-btn>
         </template>
         <v-list>
           <v-list-item>
@@ -52,23 +35,22 @@
         <router-view></router-view>
       </v-container>
     </v-main>
-
   </v-app>
 </template>
 
 <script>
-// import { useTheme } from 'vuetify' 
+// import { useTheme } from 'vuetify'
 import { mapActions, mapGetters } from "vuex";
 
-import TaskList from "./components/TaskList.vue";
-
 export default {
-  name: 'App',
-  components: { TaskList },
+  name: "App",
   data: () => ({
-    //
+    greeting: "",
   }),
-  // setup () {
+  created() {
+    this.currentTime();
+  },
+  // setup() {
   //   const theme = useTheme()
   //   return {
   //     theme,
@@ -76,29 +58,58 @@ export default {
   //   }
   // },
   computed: {
-    ...mapGetters(["getAuthToken", "getUserEmail", "getUserID", "isLoggedIn"]),
+    ...mapGetters([
+      "getAuthToken",
+      "getUserEmail",
+      "getUserID",
+      "isLoggedIn",
+      "getUserFirstName",
+    ]),
   },
   methods: {
     ...mapActions(["logoutUser"]),
+    currentTime() {
+      var today = new Date();
+      var currentHour = today.getHours();
+
+      if (currentHour < 12) {
+        this.greeting = "Good morning";
+      } else if (currentHour < 18) {
+        this.greeting = "Good afternoon";
+      } else {
+        this.greeting = "Good evening";
+      }
+    },
   },
-}
+};
 </script>
 
 <style>
 .background {
-    width: 100%;
-    height: 100%;
-    position: absolute;
-    top: 0;
-    left: 0;
-    background: url("./assets/2560x1440-blue-abstract-noise-free-website-background-image.jpg") no-repeat center center;
-    background-size: cover;
-    background-color: white;
-    transform: scale(1.1);
-  }
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  background: url("./assets/mountain.jpg") no-repeat center center;
+  background-size: cover;
+  background-color: white;
+}
 
+.task-list-app-bar {
+  background-color: rgba(255, 255, 255, 0.8) !important;
+}
 a {
-    text-decoration: none;
-    color: black;
+  text-decoration: none;
+  color: black;
+}
+.greeting {
+  font-size: 20px;
+  display: flex;
+  justify-content: flex-end;
+  margin-right: 10px;
+}
+html { 
+  overflow-y: auto !important; 
 }
 </style>
