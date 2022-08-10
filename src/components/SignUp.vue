@@ -41,16 +41,15 @@
           variant="outlined"
           prepend-inner-icon="mdi-lock"
         ></v-text-field>
-        <v-btn @click="validate" color="primary" width="100vh">Sign Up</v-btn>
+        <v-btn @click="validate" color="blue" width="100vh">Sign Up</v-btn>
       </v-form>
 
       <v-divider></v-divider>
-      <v-card-text
+      <v-card-text class="mt-2 mb-n5"
         >Already have an account?
         <router-link to="/login">Sign-In</router-link>
       </v-card-text>
     </v-card>
-    <!-- <router-link v-if=""></router-link> -->
   </v-container>
 </template>
 
@@ -62,7 +61,7 @@ export default {
   data() {
     return {
       signUpFirstName: "",
-      signUpFirstName: "",
+      signUpLastName: "",
       signUpEmail: "",
       signUpPassword: "",
       signUpPasswordValidation: "",
@@ -85,11 +84,13 @@ export default {
   methods: {
     ...mapActions(["registerUser"]),
     onSignUp(event) {
-      event.preventDefault();
+      // event.preventDefault();
       let data = {
         user: {
           email: this.signUpEmail,
           password: this.signUpPassword,
+          first_name: this.signUpFirstName,
+          last_name: this.signUpLastName,
         },
       };
       this.registerUser(data);
@@ -106,8 +107,7 @@ export default {
     validate() {
       this.$refs.form.validate();
       if (this.valid) {
-        // this.onSignUp
-        alert("Successfuly registered");
+        this.onSignUp();
       }
     },
     isValidEmail() {
@@ -122,6 +122,25 @@ export default {
         this.signUpPassword == this.signUpPasswordValidation ||
         "Passwords must match";
     },
+    // setUserName() {
+    //   const data = {
+    //     user: {
+    //       first_name: this.signUpFirstName,
+    //       last_name: this.signUpLastName,
+    //     },
+    //   };
+    //   const config = {
+    //     headers: {
+    //       Authorization: this.getAuthToken,
+    //     },
+    //   };
+    //   axios
+    //     .put(`${BASE_URL}/users`, data, config)
+    //     .then((response) => {
+    //       console.log(response);
+    //     })
+    //     .catch((error) => console.log(error));
+    // },
   },
 };
 </script>

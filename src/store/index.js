@@ -4,9 +4,6 @@ import sessionManager from "@/store/modules/session_manager";
 
 const vuexLocal = new VuexPersistence({
   storage: window.localStorage,
-  // saveState: (key, state, storage) => {
-  //   console.log(`State: ${JSON.stringify(state.sessionManager.user)}, \nStorage: ${JSON.stringify(storage)}`)
-  // },
 })
 
 export default createStore({

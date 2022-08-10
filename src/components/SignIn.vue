@@ -35,14 +35,14 @@
         <v-btn
           class="mb-n9 mt-3"
           @click="validateSignIn()"
-          color="primary"
+          color="blue"
           width="490px"
           >Login</v-btn
         >
       </v-form>
     </v-card>
 
-    <v-row class="mt-6">
+    <v-row class="mt-1">
       <v-col>
         <p class="text-center text-body-2">New to Ulist?</p>
         <router-link to="/register">
